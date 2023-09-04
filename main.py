@@ -9,7 +9,7 @@ api_hash_bot = "1089ce3cca2ffe6705ad6f6225484d8c" # اب هاش
 bot = TelegramClient("Bot", api_id_bot, api_hash_bot).start(bot_token="6374219818:AAE0iUS7SWX5b6YHNEQbh_m13JI-Rwif-Ss") # توكن بوتك
 
 # needs
-owner_id = [5191376406] #ايديك
+owner_id = [1454509352] #ايديك
 collect, bots_to_collect, start_earn = True, [], False
 
 # LOAD SESSION
