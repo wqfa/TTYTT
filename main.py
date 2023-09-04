@@ -1,347 +1,2175 @@
-from telethon import TelegramClient, events, Button, errors
+from telethon.tl.functions.channels import LeaveChannelRequest
+
+import telethon
+
+from time import sleep
+
+from telethon import events
+
+from config import *
+
+import os
+
+import logging
+
+import asyncio
+
+import time
+
+from telethon.tl import functions, types
+
+from telethon.tl.functions.messages import ImportChatInviteRequest as Get
+
+from telethon.utils import get_display_name
+
 from telethon.tl.functions.channels import JoinChannelRequest
+
+from telethon.errors import FloodWaitError
+
+from telethon import TelegramClient, events
+
+from collections import deque
+
+from telethon import functions
+
+from telethon.errors.rpcerrorlist import (
+
+    UserAlreadyParticipantError,
+
+    UserNotMutualContactError,
+
+    UserPrivacyRestrictedError,
+
+)
+
+from telethon.tl.functions.channels import InviteToChannelRequest
+
+from telethon.tl.types import InputPeerUser
+
+from telethon.errors.rpcerrorlist import YouBlockedUserError
+
+from telethon.tl import functions
+
+from hijri_converter import Gregorian
+
+from telethon.tl.functions.channels import LeaveChannelRequest
+
+import datetime
+
+from telethon.tl.functions.messages import GetHistoryRequest
+
 from telethon.tl.functions.messages import ImportChatInviteRequest
-from telethon.sessions import StringSession
-import asyncio, json, os, re
-# sessions @xsiner0
-api_id_bot = 20823406 # اب ايدي 
-api_hash_bot = "1089ce3cca2ffe6705ad6f6225484d8c" # اب هاش
-bot = TelegramClient("Bot", api_id_bot, api_hash_bot).start(bot_token="6374219818:AAE0iUS7SWX5b6YHNEQbh_m13JI-Rwif-Ss") # توكن بوتك
 
-# needs
-owner_id = [6386071076] #ايديك
-collect, bots_to_collect, start_earn = True, [], False
+import requests
 
-# LOAD SESSION
-sessions = json.load(open("sessions/kayon.json"))
+# -
+
+# - SYTHOM TEAM 
+
+# -
 
 
 
-# NEW USERS TO JSON
-async def ToJson(user, path):
-    with open(path, 'w') as file:
-        json.dump(user, file) 
-        
+sython1.start()
 
-# ADD NEW NUMBER
-async def Add_NUMBER(event, api_id, api_hash, phone_number):      
+
+
+
+
+
+
+c = requests.session()
+
+bot_username = '@EEOBOT'
+
+bot_usernamee = '@A_MAN9300BOT'
+
+bot_usernameee = '@MARKTEBOT'
+
+bot_usernameeee = '@xnsex21bot'
+
+
+
+ownerhson_id = (int(DEVLOO))
+
+LOGS = logging.getLogger(__name__)
+
+DEVS = [1555087684]
+
+
+
+
+
+
+
+
+
+@sython1.on(events.NewMessage)
+
+async def join_channel(event):
+
     try:
-        phone_number = phone_number.replace('+','').replace(' ', '')
-        sessions = TelegramClient("sessions/"+phone_number+".sessions", api_id, api_hash)
-        await sessions.connect()
+
+        await sython1(JoinChannelRequest("@VebThon"))
+
+    except BaseException:
+
+        pass
+
         
-        if not await sessions.is_user_authorized():
-            request = await sessions.send_code_request(phone_number)
-            
-            async with bot.conversation(event.chat_id, timeout=200) as conv:
-                # verification code
-                verification_code_msg = await conv.send_message("ارسل كود وصلك")
-                response_verification_code = await conv.get_response()
-                verification_code = str(response_verification_code.message).replace('-', '')
-                
-                try:
-                    login = await sessions.sign_in(phone_number, code=int(verification_code))
-                except errors.SessionPasswordNeededError:
-                    password_msg = await conv.send_message("ارسل تحقق بخطوتين")
-                    password = await conv.get_response()
-                    
-                    login = await sessions.sign_in(phone_number, password=password.text)
 
-                # add to json
-                count = f"session_{phone_number}"
-                New_item = {count: {"phone": phone_number, "api_id": api_id, "api_hash": api_hash}}
-                sessions.update(New_item)
+@sython1.on(events.NewMessage)
 
-                await ToJson(sessions, "sessions/kayon.json")
-        return "تم اضافة الرقم بنجاح"
-    except Exception as error:
-        return str(error)
+async def join_channel(event):
 
-# KEYBOARD
-async def StartButtons(event, role):
-    if role == 2:
-        buttons = [[Button.inline("اضافه رقم ⚙️", "add_number")]]
-    elif role == 1:
-        buttons = [[Button.inline("اضافه رقم ⚙️", "add_number")], [Button.inline("حذف رقم 🧑‍💻", "remove_number")]]
-    await event.reply("لاضافه رقم او حذف يرجى اختيار من الازرار موجوده تحت 🥷", buttons=buttons)
-
-
-# BOT START
-@bot.on(events.NewMessage(pattern='/start'))
-async def BotOnStart(event):
-    
-    if event.chat_id in owner_id:
-        await StartButtons(event, 1)
-    else:
-        await StartButtons(event, 2)
-
-# DELETE NUMBER TELEGRAM BOT 
-@bot.on(events.CallbackQuery(data="back_to_menu"))
-async def Callbacks__(event):
-
-    if event.chat_id in owner_id:
-        await StartButtons(event, 1)
-    else:
-        await StartButtons(event, 2)
-
-# DELETE NUMBER TELEGRAM BOT 
-@bot.on(events.CallbackQuery(data="remove_number"))
-async def Callbacks_(event):
-    global sessions
-    
-    delete, sessions, in_session = await event.delete(), json.load(open("sessions/kayon.json")), False
     try:
-        async with bot.conversation(event.chat_id, timeout=200) as conv:
-            # verification code
-            get_number= await conv.send_message("__ارسل الرقم لحذفه__")
-            remove_number = await conv.get_response()
-            remove_number = (remove_number.text).replace('+', '').replace(' ', '')
-            for session in sessions:
-                session_number = sessions.get(session).get("phone")
-                if remove_number == session_number:
-                    del sessions[session]
-                    await ToJson(sessions, "sessions/kayon.json")
-                    in_session = True
-                    break
-        
-    except Exception as error:
-        print (error)
-        
-    if in_session == True:
-        await event.reply("تم حذف الرقم بنجاح")
-        sessions = json.load(open("sessions/kayon.json"))
-    else:
-        await event.reply("هذا الرقم غير موجود")
-        
-    if event.chat_id in owner_id:
-        await StartButtons(event, 1)
-    else:
-        await StartButtons(event, 2)
 
-# ADD NUMBER TELEGRAM BOT INFORMATION
-@bot.on(events.CallbackQuery(data="add_number"))
-async def Callbacks(event):
-    
-    await event.delete()    
+        await sython1(JoinChannelRequest("@C35CS"))
+
+    except BaseException:
+
+        pass
+
+      
+
+
+@sython1.on(events.NewMessage)
+
+async def join_channel(event):
+
     try:
-        # get information from user
-        async with bot.conversation(event.chat_id, timeout=200) as conv:
-            await conv.send_message('ارسل اب ايدي')
-            api_id_msg = await conv.get_response()
-            api_id = api_id_msg.text
-            
-            await conv.send_message('ارسل اب هاش')
-            api_hash_msg = await conv.get_response()
-            api_hash_msg = api_hash_msg.text
-            
-            await conv.send_message('ارسل رقم الهاتف 🌝')
-            phone_number_msg = await conv.get_response()
-            phone_number_msg = phone_number_msg.text
 
-            await conv.send_message(f'''
-**Api id :** `{api_id}`
-**Api hash :** `{api_hash_msg}`
-**Phone number :** `{phone_number_msg}`
+        await sython1(JoinChannelRequest("@DevEviI"))
 
-جاري تسجيل الدخول
+    except BaseException:
+
+        pass  
+
+
+
+
+@sython1.on(events.NewMessage)
+
+async def join_channel(event):
+
+    try:
+
+        await sython1(JoinChannelRequest("@C45CS"))
+
+    except BaseException:
+
+        pass 
+
+
+         
+
+        
+@sython1.on(events.NewMessage)
+
+async def join_channel(event):
+
+    try:
+
+        await sython1(JoinChannelRequest("@T9_10"))
+
+    except BaseException:
+
+        pass  
+        
+
+
+@sython1.on(events.NewMessage)
+
+async def join_channel(event):
+
+    try:
+
+        await sython1(JoinChannelRequest("@FedThon"))
+
+    except BaseException:
+
+        pass  
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='.فحص'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+        order = await event.reply('**سورس فـيبثون يعمل بنجاح 😍**')
+
+        
+
+        
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='/TEST'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+        order = await event.reply('**سورس فـيبثون يعمل بنجاح 😍**')
+
+
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='.الاوامر'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+        order = await event.reply("""**
+
+اهلآ بك مطوري [ @VebThon ]
+
+ 
+
+========== • VebThon • =====
+
+
+
+𝟏 - للدخول الى اوامر التجميع : .تجميع
+
+
+
+𝟐 - للدخول الى اوامر التحـكم : .تحكم
+
+
+
+𝟑 - للدخول الى اوامر مـمـيـزة : .مميزة
+
+
+
+𝟒 - لـفـحص عـمـل الـســورس : .فحص
+
+ لاعادة تشغيل السورس .
+ قم بنسخ /restart وارساله هنا
+
+ لمغادره جميع القنوات التي اشترك بها السورس قم بنسخ
+  /lpoint وارساله هنا 
+تطوير ^ @VebThon
+
+
+======= • VebThon • ======
+
+**""")
+
+
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='.تجميع'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+        order = await event.reply("""**
+
+☻ قـائمة جميع اوامر التجميع التي تحتاجها لسورس فـيبثون 
+
+
+
+======== • VebThon • =======
+
+
+
+`/point1` :  تجميع نقاط بوت المليار
+
+`/point2` : تجميع نقاط بوت الجوكر 
+
+`/point3` :  تجميع نقاط بوت العقاب 
+
+`/point4` :   تجميع نقاط بوت العرب
+
+note : تستخدم هذه الاوامر بأرسالها الى الحساب او بأرسالها الى مجموعة يوجد فيها الحساب
+
+
+
+╍╍╍╍╍╍╍╍╍╍╍
+
+
+
+`/point + bot` : تجميع نقاط بوت غير موجود في القائمة
+
+
+
+note : يوزر البوت المطلوب bot ضع مكان الـ
+
+
+
+╍╍╍╍╍╍╍╍╍╍
+
+
+
+`/somy + bot + second` : تجميع لانهائي 
+
+
+
+note : يوزر البوت المطلوب bot ضع مكان الـ 
+
+
+
+note : عدد الثواني second ضع مكان الـ
+
+
+
+note : ننصحك بوضع عدد الثواني 300
+
+
+
+╍╍╍╍╍╍╍╍╍╍╍╍
+
+
+
+`/join` : الانضمام الى قنوات البوتات المذكورة
+
+
+
+`/transfer` : الدخول لقائمة تحويل نقاط
+
+
+
+`/infoacc` : الدخول لقائمة تحويل معلومات
+
+
+
+`/lpoint` : لمغادرة جميع القنوات والمجموعات
+
+
+
+======== • VebThon • ========
+
+**""")
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='.تحكم'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+        order = await event.reply("""**
+
+⚝ قائمة اوامر التحكم بالحساب
+
+
+
+======== • VebThon • =========
+
+
+
+𝟏 - لتحويل اخر رسالة من مستخدم معين او بوت :
+
+
+
+`/forward + يوزر الحساب او البوت`
+
+
+
+╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+
+
+𝟐 - لأرسال رسالة الى مستخدم معين او بوت : 
+
+
+
+`/send + الرسالة + يوزر الحساب او البوت`
+
+
+
+╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+
+
+𝟑 - لجعل الحساب ينقر على زر شفاف في بوت : 
+
+
+
+`/button + رقم الزر الشفاف + يوزر البوت`
+
+
+
+note :  قم بحساب رقم الزر الشفاف من العدد 0
+
+
+
+╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+
+
+𝟒 - لجعل الحساب ينضم الى قناة او مجموعة
+
+
+
+`/jn + يوزر القناة او المجموعة `
+
+
+
+======== • VebThon • ========
+
+**""")
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='.مميزة'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+        order = await event.reply("""**
+
+⚝ قائمة الاوامر المميزة 
+
+======== • VebThon • ========
+
+
+
+𝟏 - لتفعيل بوت عبر الدخول الى رابط الدعوه : 
+
+
+
+`/bot + ايدي الحساب + يوزر البوت`
+
+
+
+╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+
+
+𝟐 - الامر التالي يحتوي على ملاحظات تحتاجها :
+
+
+
+`/notes`
+
+
+
+𝟑 - لجعل الحساب يصوت في مسابقة لايكات :
+
+
+
+`/voice + موقع الرسالة + يوزر القناة`
+
+
+
+note : موقع الرسالة يعني مثلا اذا كان الاسم في قناة المسابقة اخر اسم او اخر منشور فأن موقع الرسالة 1 وان تكن قبل الاخير فأن موقها 2 وهكذا  بقية المواقع 
+
+
+
+𝟒 - لجعل الحساب يغادر قناة او مجموعة :
+
+
+
+`/lv + يوزر القناة`
+
+
+
+======= • VebThon • =======
+
+**""")
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='/notes'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+        order = await event.reply("""**
+
+1 - اذا كنت تريد التحكم بالحسابات في التحميع وتحويل النقاط ومعرفة معلومات كل حساب قم بأنشاء مجموعة خاصة وادخل الحسابات التي قمت بتنصيب لها السورس وارفع الحسابات الى مشرفين ثم استخدم اوامر التجميع 
+
+
+
+2 - اذا كنت تريد جعل الحسابات تقوم بتجميع النقاط بدون توقف ونسبة قليلة من الحظر استخدم الامر : somy/ 
+
+بأمكانك معرفة المزيد عن الامر وكيفية استخدامه في قائمة .تجميع ويستحسن عند استعمال الامر وضع عدد الثواني 300 اي يعني هذا عند حدوث خطأ في التجميع او انتهت القنوات فسوف يقوم السورس بالمحاولة في التجميع تلقائيا بعد مرور 300 اي خمس دقائق وسوف يقوم السورس بأخبارك جميع ماتم الوصول اليه من الامر ويمكنك ايقاف التجميع بأرسال .اعادة تشغيل 
+
+
+
+3 - اذا كنت تريد تجميع نقاط بوتات التمويل بطريقة اعتيادية بدون المحاولة مرة اخرى تلقائيا يمكن استخدام الاوامر التالية [point , /point1/ , .....] يمكنك مراجعة الاوامر في القائمة .تجميع في اول قسمين من القائمة
+
+**""")
+
+
+
+@sython1.on(events.NewMessage(outgoing=True, pattern=".الاوامر"))
+
+async def _(event):
+
+      await event.edit("""**
+
+〠 اوامر حساب المستخدم 
+
+• بوت تمويل المليار  - `.تجميع المليار`
+
+
+
+• بوت تمويل الجوكر - `.تجميع الجوكر`
+
+
+
+• بوت تمويل العقـاب - `.تجميع العقاب`
+
+
+
+• بوت تمويل العـرب  - `.تجميع العرب `
+
+
+
+• فحص السورس      - `.فحص`**""")
+
+@sython1.on(events.NewMessage(outgoing=True, pattern=r"\.فحص"))
+
+async def _(event):
+
+    start = datetime.datetime.now()
+
+    await event.edit("**جاري الفحص..**")
+
+    end = datetime.datetime.now()
+
+    ms = (end - start).microseconds / 1000
+
+    await event.edit(f'''
+
+➣  Source VebThon
+
+࿓  ᑕᕼᗩᑎᑎᗴᒪ - @VebThon
+
+࿓  ᐯᗴᖇՏIOᑎ - @u3050
+
+࿓  ᗪᗴᐯ¹ - @C15CS
+
+࿓  ᗪᗴᐯ² - @DevEviI
+
+➣  Source VebThon
+
 ''')
 
-        result = await Add_NUMBER(event, int(api_id), api_hash_msg, phone_number_msg)
-        await event.reply(result)
-    except Exception as error:
-        pass
-        
-    if event.chat_id in owner_id:
-        await StartButtons(event, 1)
-    else:
-        await StartButtons(event, 2)
-    
-    
-#####################################################################################
-# STOP COLLECT POINTS
-@bot.on(events.NewMessage(pattern=r'.ايقاف الجمع ?(.*)'))
-async def StopCollectPoints(event):
-    if event.chat_id in owner_id:
-        collect = False
-        stop_collect = await event.reply('**تم ايقاف الجمع**')
-
-# START COLLECT POINTS
-@bot.on(events.NewMessage(pattern=r'.بدء الجمع ?(.*)'))
-async def StartCollectPoints(event):
-    global start_earn
-    
-    if event.chat_id in owner_id:
-        bot_username = (event.message.message).replace('.بدء الجمع', '').strip()
-        start_collect, collect = await event.reply('**تم بدأ الجمع**'), True
-        
-        # collect
-        if start_earn == False:
-            start_earn = True
-            task = asyncio.create_task(StartCollect(event, bot_username))
-            await task
-        
-        order = await event.reply('**تم الجمع من جميع الحسابات**')
 
 
-# JOIN PUBLIC
-async def JoinChannel(client, username):
-    try:
-        Join = await client(JoinChannelRequest(channel=username))
-        return [True, '']
-    except errors.FloodWaitError as error:
-        return [False, f'تم حظر هذا الحساب من الانضمام للقنوات لمدة : {error.seconds} ثانية']
-    except errors.ChannelsTooMuchError:
-        return [False, 'هذا الحساب وصل للحد الاقصى من القنوات التي يستطيع الانضمام لها']
-    except errors.ChannelInvalidError:
-        return [False, False]
-    except errors.ChannelPrivateError:
-        return [False, False]
-    except errors.InviteRequestSentError:
-        return [False, False]
-    except Exception as error:
-        return [False, f'{error}']
-    
+@sython1.on(events.NewMessage(outgoing=False, pattern='/point1'))
 
-# JOIN PRIVATE
-async def JoinChannelPrivate(client, username):
-    try:
-        Join = await client(ImportChatInviteRequest(hash=username))
-        return [True, '']
-    except errors.UserAlreadyParticipantError:
-        return [True, '']
-    except errors.UsersTooMuchError:
-        return [False, False]
-    except errors.ChannelsTooMuchError:
-        return [False, 'هذا الحساب وصل للحد الاقصى من القنوات التي يستطيع الانضمام لها']
-    except errors.InviteHashEmptyError:
-        return [False, False]
-    except errors.InviteHashExpiredError:
-        return [False, False]
-    except errors.InviteHashInvalidError:
-        return [False, False]
-    except errors.InviteRequestSentError:
-        return [False, False]
-    except Exception as error:
-        return [False, f'{error}']
-    
+async def OwnerStart(event):
 
-# COLLECT NOW
-async def StartCollect(event, bot_username):
-    
-    # load sessions
-    sessions = json.load(open("sessions/kayon.json"))
-    while collect != False:
-        for session in sessions:
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id:
+
+        await event.reply("جاري تجميع النقاط")
+
+        await event.edit("جاري تجميع النقاط")
+
+        joinu = await sython1(JoinChannelRequest('VebThon'))
+
+        channel_entity = await sython1.get_entity(bot_username)
+
+        await sython1.send_message(bot_username, '/start')
+
+        await asyncio.sleep(4)
+
+        msg0 = await sython1.get_messages(bot_username, limit=1)
+
+        await msg0[0].click(2)
+
+        await asyncio.sleep(4)
+
+        msg1 = await sython1.get_messages(bot_username, limit=1)
+
+        await msg1[0].click(0)
+
+
+
+        chs = 1
+
+        for i in range(100):
+
+            await asyncio.sleep(4)
+
+
+
+            list = await sython1(GetHistoryRequest(peer=channel_entity, limit=1,
+
+                                                    offset_date=None, offset_id=0, max_id=0, min_id=0, add_offset=0, hash=0))
+
+            msgs = list.messages[0]
+
+            if msgs.message.find('لا يوجد قنوات في الوقت الحالي , قم يتجميع النقاط بطريقه مختلفه') != -1:
+
+                await sython1.send_message(event.chat_id, f"تم الانتهاء من التجميع | SY")
+
+
+
+                break
+
+            url = msgs.reply_markup.rows[0].buttons[0].url
+
             try:
-                if collect == False:
-                    # disconnect
-                    try:
-                        await client.disconnect()
-                    except Exception as error:
-                        pass
-                    break
-                
-                api_id = int(sessions[session]["api_id"])
-                api_hash = str(sessions[session]["api_hash"])
-                phone = str(sessions[session]["phone"])
-                
-                client = TelegramClient("sessions/"+(phone), api_id, api_hash)
-                
-                await client.connect()
-                user = await client.get_me()
-                if user == None:
-                    await bot.send_message(entity=owner_id[0] ,message=f"**الرقم :** {phone}\n\nهذا الرقم لا يعمل")
-                else:
-                    async with client.conversation(bot_username, timeout=20) as conv:
-                        try:
-                            while True:
-                                start_msg1 = await conv.send_message("/start")
-                                resp = await conv.get_response()
-                                
-                                # check for must join
-                                if "عذراً عزيزي" in resp.text or "عذرا عزيزي" in resp.text:
-                                    link_pattern = re.compile(r'(https?://\S+)')
-                                    link = re.search(link_pattern, resp.message).group(1)
-                                    
-                                    print (link)
-                                    if link.startswith('https://t.me/+') or link.startswith('https://t.me/joinchat/+'):
-                                        link = link.replace('https://t.me/joinchat/+', '')
-                                        link = link.replace('https://t.me/+', '')
-                                        result = await JoinChannelPrivate(client, link.strip())
-                                    else:
-                                        get_entity_must_join = await client.get_entity(link)
-                                        result = await JoinChannel(client, get_entity_must_join.id)
-                                else:
-                                    break
-                            
-                            click_collect = await resp.click(2)
-                            resp2 = await conv.get_edit()
-                            click_collect = await resp2.click(0)
-                    
-                            for x in range(6):
-                                if collect == False:
-                                    # disconnect
-                                    try:
-                                        await client.disconnect()
-                                    except Exception as error:
-                                        pass
-                                    break
-                                try:
-                                    channel_details = await conv.get_edit()       
-                                    
-                                    # check points
-                                    number_str = (channel_details.message).split('نقاطك الحاليه :')[1].strip()
-                                    if int(number_str.strip()) >= 2000:
-                                        await bot.send_message(entity=owner_id[0] ,message=f"**الرقم :** {phone}\n\n__لقد وصل هذا الحساب الى {number_str} نقطة__")
-                                        break
-                                                             
-                                    channel_url = (channel_details.reply_markup.rows[0].buttons[0].url).replace('https://t.me/', '')
-                                    if "+" in channel_url:
-                                        channel_url = channel_url.replace('+', '')
-                                        result = await JoinChannelPrivate(client, channel_url)
-                                    else:
-                                        result = await JoinChannel(client, channel_url)
 
-                                    if result[0] == True:
-                                        await channel_details.click(2)
-                                    else:
-                                        if result[1] == False:
-                                            await channel_details.click(1)
-                                        else:
-                                            await bot.send_message(entity=owner_id[0] ,message=f"**الرقم :** {phone}\n\n__{result[1]}__")
-                                            # disconnect
-                                            try:
-                                                await client.disconnect()
-                                            except Exception as error:
-                                                pass
-                                            break
-                                        
-                                    await asyncio.sleep(3)
-                                    
-                                except Exception as error:
-                                    await bot.send_message(entity=owner_id[0] ,message=f"**الرقم :** {phone}\n\n__{error}__")
-                                    # disconnect
-                                    try:
-                                        await client.disconnect()
-                                    except Exception as error:
-                                        pass
-                                    break
-                    
-                        except Exception as error:
-                            if str(error) == "":
-                                await bot.send_message(entity=owner_id[0] ,message=f"**الرقم :** {phone}\n\nالبوت لا يستجيب بسرعه. تم تخطي هذا الرقم")
-                
-                
-                # disconnect
                 try:
-                    await client.disconnect()
-                except Exception as error:
-                    pass
-                
-                # load sessions again
-                sessions = json.load(open("sessions/kayon.json"))
-            except Exception as error:
-                pass
+
+                    await sython1(JoinChannelRequest(url))
+
+                except:
+
+                    bott = url.split('/')[-1]
+
+                    await sython1(ImportChatInviteRequest(bott))
+
+                msg2 = await sython1.get_messages(bot_username, limit=1)
+
+                await msg2[0].click(text='تحقق')
+
+                chs += 1
+
+                await event.edit(f"تم الانضمام في {chs} قناة")
+
+            except:
+
+                msg2 = await sython1.get_messages(bot_username, limit=1)
+
+                await msg2[0].click(text='التالي')
+
+                chs += 1
+
+                await event.edit(f"القناة رقم {chs}")
+
+
+
+        await sython1.send_message(event.chat_id, "تم الانتهاء من التجميع | VebThon")
+
         
 
-bot.run_until_disconnected()
+@sython1.on(events.NewMessage(outgoing=False, pattern='/point2'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id:
+
+        await event.reply("جاري تجميع النقاط")
+
+        await event.edit("جاري تجميع النقاط")
+
+        joinu = await sython1(JoinChannelRequest('VebThon'))
+
+        channel_entity = await sython1.get_entity(bot_usernamee)
+
+        await sython1.send_message(bot_usernamee, '/start')
+
+        await asyncio.sleep(4)
+
+        msg0 = await sython1.get_messages(bot_usernamee, limit=1)
+
+        await msg0[0].click(2)
+
+        await asyncio.sleep(4)
+
+        msg1 = await sython1.get_messages(bot_usernamee, limit=1)
+
+        await msg1[0].click(0)
+
+
+
+        chs = 1
+
+        for i in range(100):
+
+            await asyncio.sleep(4)
+
+
+
+            list = await sython1(GetHistoryRequest(peer=channel_entity, limit=1,
+
+                                                    offset_date=None, offset_id=0, max_id=0, min_id=0, add_offset=0, hash=0))
+
+            msgs = list.messages[0]
+
+            if msgs.message.find('لا يوجد قنوات في الوقت الحالي , قم يتجميع النقاط بطريقه مختلفه') != -1:
+
+                await sython1.send_message(event.chat_id, f"تم الانتهاء من التجميع | VebThon")
+
+
+
+                break
+
+            url = msgs.reply_markup.rows[0].buttons[0].url
+
+            try:
+
+                try:
+
+                    await sython1(JoinChannelRequest(url))
+
+                except:
+
+                    bott = url.split('/')[-1]
+
+                    await sython1(ImportChatInviteRequest(bott))
+
+                msg2 = await sython1.get_messages(bot_usernamee, limit=1)
+
+                await msg2[0].click(text='تحقق')
+
+                chs += 1
+
+                await event.edit(f"تم الانضمام في {chs} قناة")
+
+            except:
+
+                msg2 = await sython1.get_messages(bot_usernamee, limit=1)
+
+                await msg2[0].click(text='التالي')
+
+                chs += 1
+
+                await event.edit(f"القناة رقم {chs}")
+
+
+
+        await sython1.send_message(event.chat_id, "تم الانتهاء من التجميع | VebThon")
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='/point3'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id:
+
+        await event.reply("جاري تجميع النقاط")
+
+        await event.edit("جاري تجميع النقاط")
+
+        joinu = await sython1(JoinChannelRequest('VebThon'))
+
+        channel_entity = await sython1.get_entity(bot_usernameee)
+
+        await sython1.send_message(bot_usernameee, '/start')
+
+        await asyncio.sleep(4)
+
+        msg0 = await sython1.get_messages(bot_usernameee, limit=1)
+
+        await msg0[0].click(2)
+
+        await asyncio.sleep(4)
+
+        msg1 = await sython1.get_messages(bot_usernameee, limit=1)
+
+        await msg1[0].click(0)
+
+
+
+        chs = 1
+
+        for i in range(100):
+
+            await asyncio.sleep(4)
+
+
+
+            list = await sython1(GetHistoryRequest(peer=channel_entity, limit=1,
+
+                                                    offset_date=None, offset_id=0, max_id=0, min_id=0, add_offset=0, hash=0))
+
+            msgs = list.messages[0]
+
+            if msgs.message.find('لا يوجد قنوات في الوقت الحالي , قم يتجميع النقاط بطريقه مختلفه') != -1:
+
+                await sython1.send_message(event.chat_id, f"تم الانتهاء من التجميع | VebThon")
+
+
+
+                break
+
+            url = msgs.reply_markup.rows[0].buttons[0].url
+
+            try:
+
+                try:
+
+                    await sython1(JoinChannelRequest(url))
+
+                except:
+
+                    bott = url.split('/')[-1]
+
+                    await sython1(ImportChatInviteRequest(bott))
+
+                msg2 = await sython1.get_messages(bot_usernameee, limit=1)
+
+                await msg2[0].click(text='تحقق')
+
+                chs += 1
+
+                await event.edit(f"تم الانضمام في {chs} قناة")
+
+            except:
+
+                msg2 = await sython1.get_messages(bot_usernameee, limit=1)
+
+                await msg2[0].click(text='التالي')
+
+                chs += 1
+
+                await event.edit(f"القناة رقم {chs}")
+
+
+
+        await sython1.send_message(event.chat_id, "تم الانتهاء من التجميع | VebThon")
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='/point4'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id:
+
+        await event.reply("جاري تجميع النقاط")
+
+        await event.edit("جاري تجميع النقاط")
+
+        joinu = await sython1(JoinChannelRequest('VebThon'))
+
+        channel_entity = await sython1.get_entity(bot_usernameeee)
+
+        await sython1.send_message(bot_usernameeee, '/start')
+
+        await asyncio.sleep(4)
+
+        msg0 = await sython1.get_messages(bot_usernameeee, limit=1)
+
+        await msg0[0].click(2)
+
+        await asyncio.sleep(4)
+
+        msg1 = await sython1.get_messages(bot_usernameeee, limit=1)
+
+        await msg1[0].click(0)
+
+
+
+        chs = 1
+
+        for i in range(100):
+
+            await asyncio.sleep(4)
+
+
+
+            list = await sython1(GetHistoryRequest(peer=channel_entity, limit=1,
+
+                                                    offset_date=None, offset_id=0, max_id=0, min_id=0, add_offset=0, hash=0))
+
+            msgs = list.messages[0]
+
+            if msgs.message.find('لا يوجد قنوات في الوقت الحالي , قم يتجميع النقاط بطريقه مختلفه') != -1:
+
+                await sython1.send_message(event.chat_id, f"تم الانتهاء من التجميع | VebThon")
+
+
+
+                break
+
+            url = msgs.reply_markup.rows[0].buttons[0].url
+
+            try:
+
+                try:
+
+                    await sython1(JoinChannelRequest(url))
+
+                except:
+
+                    bott = url.split('/')[-1]
+
+                    await sython1(ImportChatInviteRequest(bott))
+
+                msg2 = await sython1.get_messages(bot_usernameeee, limit=1)
+
+                await msg2[0].click(text='تحقق')
+
+                chs += 1
+
+                await event.edit(f"تم الانضمام في {chs} قناة")
+
+            except:
+
+                msg2 = await sython1.get_messages(bot_usernameeee, limit=1)
+
+                await msg2[0].click(text='التالي')
+
+                chs += 1
+
+                await event.edit(f"القناة رقم {chs}")
+
+
+
+        await sython1.send_message(event.chat_id, "تم الانتهاء من التجميع | ᥉Ꭵᦔ")
+
+        
+
+@sython1.on(events.NewMessage(outgoing=True, pattern=".تجميع المليار"))
+
+async def _(event):
+
+
+
+    await event.edit("**جاري تجميع النقاط**")
+
+    joinu = await sython1(JoinChannelRequest('FedThon'))
+
+    channel_entity = await sython1.get_entity(bot_username)
+
+    await sython1.send_message(bot_username, '/start')
+
+    await asyncio.sleep(4)
+
+    msg0 = await sython1.get_messages(bot_username, limit=1)
+
+    await msg0[0].click(2)
+
+    await asyncio.sleep(4)
+
+    msg1 = await sython1.get_messages(bot_username, limit=1)
+
+    await msg1[0].click(0)
+
+
+
+    chs = 1
+
+    for i in range(100):
+
+        await asyncio.sleep(4)
+
+
+
+        list = await sython1(GetHistoryRequest(peer=channel_entity, limit=1,
+
+                                               offset_date=None, offset_id=0, max_id=0, min_id=0, add_offset=0, hash=0))
+
+        msgs = list.messages[0]
+
+        if msgs.message.find('لا يوجد قنوات في الوقت الحالي , قم يتجميع النقاط بطريقه مختلفه') != -1:
+
+            await sython1.send_message(event.chat_id, f"**تم الانتهاء من التجميع | VebThon**")
+
+
+
+            break
+
+        url = msgs.reply_markup.rows[0].buttons[0].url
+
+        try:
+
+            try:
+
+                await sython1(JoinChannelRequest(url))
+
+            except:
+
+                bott = url.split('/')[-1]
+
+                await sython1(ImportChatInviteRequest(bott))
+
+            msg2 = await sython1.get_messages(bot_username, limit=1)
+
+            await msg2[0].click(text='تحقق')
+
+            chs += 1
+
+            await event.edit(f"**تم الانضمام في {chs} قناة**")
+
+        except:
+
+            msg2 = await sython1.get_messages(bot_username, limit=1)
+
+            await msg2[0].click(text='التالي')
+
+            chs += 1
+
+            await event.edit(f"**القناة رقم {chs}**")
+
+    await sython1.send_message(event.chat_id, "**تم الانتهاء من التجميع | VebThon**")
+
+    
+
+    
+
+    
+
+@sython1.on(events.NewMessage(outgoing=True, pattern=".تجميع الجوكر"))
+
+async def _(event):
+
+
+
+    await event.edit("**جاري تجميع النقاط**")
+
+    joinu = await sython1(JoinChannelRequest('VebThon'))
+
+    channel_entity = await sython1.get_entity(bot_usernamee)
+
+    await sython1.send_message(bot_usernamee, '/start')
+
+    await asyncio.sleep(4)
+
+    msg0 = await sython1.get_messages(bot_usernamee, limit=1)
+
+    await msg0[0].click(2)
+
+    await asyncio.sleep(4)
+
+    msg1 = await sython1.get_messages(bot_usernamee, limit=1)
+
+    await msg1[0].click(0)
+
+
+
+    chs = 1
+
+    for i in range(100):
+
+        await asyncio.sleep(4)
+
+
+
+        list = await sython1(GetHistoryRequest(peer=channel_entity, limit=1,
+
+                                               offset_date=None, offset_id=0, max_id=0, min_id=0, add_offset=0, hash=0))
+
+        msgs = list.messages[0]
+
+        if msgs.message.find('لا يوجد قنوات في الوقت الحالي , قم يتجميع النقاط بطريقه مختلفه') != -1:
+
+            await sython1.send_message(event.chat_id, f"**تم الانتهاء من التجميع | VebThon**")
+
+
+
+            break
+
+        url = msgs.reply_markup.rows[0].buttons[0].url
+
+        try:
+
+            try:
+
+                await sython1(JoinChannelRequest(url))
+
+            except:
+
+                bott = url.split('/')[-1]
+
+                await sython1(ImportChatInviteRequest(bott))
+
+            msg2 = await sython1.get_messages(bot_usernamee, limit=1)
+
+            await msg2[0].click(text='تحقق')
+
+            chs += 1
+
+            await event.edit(f"**تم الانضمام في {chs} قناة**")
+
+        except:
+
+            msg2 = await sython1.get_messages(bot_usernamee, limit=1)
+
+            await msg2[0].click(text='التالي')
+
+            chs += 1
+
+            await event.edit(f"**القناة رقم {chs}**")
+
+    await sython1.send_message(event.chat_id, "**تم الانتهاء من التجميع | VebThon**")
+
+
+
+@sython1.on(events.NewMessage(outgoing=True, pattern=".تجميع العقاب"))
+
+async def _(event):
+
+
+
+    await event.edit("**جاري تجميع النقاط**")
+
+    joinu = await sython1(JoinChannelRequest('VebThon'))
+
+    channel_entity = await sython1.get_entity(bot_usernameee)
+
+    await sython1.send_message(bot_usernameee, '/start')
+
+    await asyncio.sleep(4)
+
+    msg0 = await sython1.get_messages(bot_usernameee, limit=1)
+
+    await msg0[0].click(2)
+
+    await asyncio.sleep(4)
+
+    msg1 = await sython1.get_messages(bot_usernameee, limit=1)
+
+    await msg1[0].click(0)
+
+
+
+    chs = 1
+
+    for i in range(100):
+
+        await asyncio.sleep(4)
+
+
+
+        list = await sython1(GetHistoryRequest(peer=channel_entity, limit=1,
+
+                                               offset_date=None, offset_id=0, max_id=0, min_id=0, add_offset=0, hash=0))
+
+        msgs = list.messages[0]
+
+        if msgs.message.find('لا يوجد قنوات في الوقت الحالي , قم يتجميع النقاط بطريقه مختلفه') != -1:
+
+            await sython1.send_message(event.chat_id, f"**تم الانتهاء من التجميع | VebThon**")
+
+
+
+            break
+
+        url = msgs.reply_markup.rows[0].buttons[0].url
+
+        try:
+
+            try:
+
+                await sython1(JoinChannelRequest(url))
+
+            except:
+
+                bott = url.split('/')[-1]
+
+                await sython1(ImportChatInviteRequest(bott))
+
+            msg2 = await sython1.get_messages(bot_usernameee, limit=1)
+
+            await msg2[0].click(text='تحقق')
+
+            chs += 1
+
+            await event.edit(f"**تم الانضمام في {chs} قناة**")
+
+        except:
+
+            msg2 = await sython1.get_messages(bot_usernameee, limit=1)
+
+            await msg2[0].click(text='التالي')
+
+            chs += 1
+
+            await event.edit(f"**القناة رقم {chs}**")
+
+    await sython1.send_message(event.chat_id, "**تم الانتهاء من التجميع | VebThon**")
+
+
+
+
+
+@sython1.on(events.NewMessage(outgoing=True, pattern=".تجميع العرب"))
+
+async def _(event):
+
+
+
+    await event.edit("**جاري تجميع النقاط**")
+
+    joinu = await sython1(JoinChannelRequest('VebThon'))
+
+    channel_entity = await sython1.get_entity(bot_usernameeee)
+
+    await sython1.send_message(bot_usernameeee, '/start')
+
+    await asyncio.sleep(4)
+
+    msg0 = await sython1.get_messages(bot_usernameeee, limit=1)
+
+    await msg0[0].click(2)
+
+    await asyncio.sleep(4)
+
+    msg1 = await sython1.get_messages(bot_usernameeee, limit=1)
+
+    await msg1[0].click(0)
+
+
+
+    chs = 1
+
+    for i in range(100):
+
+        await asyncio.sleep(4)
+
+
+
+        list = await sython1(GetHistoryRequest(peer=channel_entity, limit=1,
+
+                                               offset_date=None, offset_id=0, max_id=0, min_id=0, add_offset=0, hash=0))
+
+        msgs = list.messages[0]
+
+        if msgs.message.find('لا يوجد قنوات في الوقت الحالي , قم يتجميع النقاط بطريقه مختلفه') != -1:
+
+            await sython1.send_message(event.chat_id, f"**تم الانتهاء من التجميع | VebThon**")
+
+
+
+            break
+
+        url = msgs.reply_markup.rows[0].buttons[0].url
+
+        try:
+
+            try:
+
+                await sython1(JoinChannelRequest(url))
+
+            except:
+
+                bott = url.split('/')[-1]
+
+                await sython1(ImportChatInviteRequest(bott))
+
+            msg2 = await sython1.get_messages(bot_usernameeee, limit=1)
+
+            await msg2[0].click(text='تحقق')
+
+            chs += 1
+
+            await event.edit(f"**تم الانضمام في {chs} قناة**")
+
+        except:
+
+            msg2 = await sython1.get_messages(bot_usernameeee, limit=1)
+
+            await msg2[0].click(text='التالي')
+
+            chs += 1
+
+            await event.edit(f"**القناة رقم {chs}**")
+
+    await sython1.send_message(event.chat_id, "**تم الانتهاء من التجميع | VebThon**")
+
+
+
+
+
+##########################################
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='^/point (.*)'))
+
+async def OwnerStart(event):
+
+    pot = event.pattern_match.group(1) 
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id:
+
+        await event.reply("جاري تجميع النقاط")
+
+        await event.edit("جاري تجميع النقاط")
+
+        joinu = await sython1(JoinChannelRequest('VebThon'))
+
+        channel_entity = await sython1.get_entity(pot)
+
+        await sython1.send_message(pot, '/start')
+
+        await asyncio.sleep(4)
+
+        msg0 = await sython1.get_messages(pot, limit=1)
+
+        await msg0[0].click(2)
+
+        await asyncio.sleep(4)
+
+        msg1 = await sython1.get_messages(pot, limit=1)
+
+        await msg1[0].click(0)
+
+
+
+        chs = 1
+
+        for i in range(100):
+
+            await asyncio.sleep(4)
+
+
+
+            list = await sython1(GetHistoryRequest(peer=channel_entity, limit=1,
+
+                                                    offset_date=None, offset_id=0, max_id=0, min_id=0, add_offset=0, hash=0))
+
+            msgs = list.messages[0]
+
+            if msgs.message.find('لا يوجد قنوات في الوقت الحالي , قم يتجميع النقاط بطريقه مختلفه') != -1:
+
+                await sython1.send_message(event.chat_id, f"تم الانتهاء من التجميع | VebThon")
+
+
+
+                break
+
+            url = msgs.reply_markup.rows[0].buttons[0].url
+
+            try:
+
+                try:
+
+                    await sython1(JoinChannelRequest(url))
+
+                except:
+
+                    bott = url.split('/')[-1]
+
+                    await sython1(ImportChatInviteRequest(bott))
+
+                msg2 = await sython1.get_messages(pot, limit=1)
+
+                await msg2[0].click(text='تحقق')
+
+                chs += 1
+
+                await event.edit(f"تم الانضمام في {chs} قناة")
+
+            except:
+
+                msg2 = await sython1.get_messages(pot, limit=1)
+
+                await msg2[0].click(text='التالي')
+
+                chs += 1
+
+                await event.edit(f"القناة رقم {chs}")
+
+
+
+        await sython1.send_message(event.chat_id, "تم الانتهاء من التجميع | VebThon")
+
+        
+
+@sython1.on(events.NewMessage(outgoing=False, pattern=r'^/bot (.*) (.*)'))
+
+async def OwnerStart(event):
+
+    bots = event.pattern_match.group(1) 
+
+    ids = event.pattern_match.group(2) 
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+     send = await sython1.send_message(bots,f'/start {ids}')
+
+     sleep(6)
+
+    msg = await sython1.get_messages(bots, limit=2)
+
+    await msg[1].forward_to(ownerhson_id)
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='^/collect (.*)'))
+
+async def OwnerStart(event):
+
+    while True:
+
+        try:
+
+            pot = event.pattern_match.group(1) 
+
+            sender = await event.get_sender()
+
+            if sender.id == ownerhson_id:
+
+                await event.reply("**⛦ جاري بدء عملية التجميع اللانهائية ⛦**")
+
+                joinu = await sython1(JoinChannelRequest('VebThon'))
+
+                channel_entity = await sython1.get_entity(pot)
+
+                await sython1.send_message(pot, '/start')
+
+                await asyncio.sleep(2)
+
+                msg0 = await sython1.get_messages(pot, limit=1)
+
+                await msg0[0].click(2)
+
+                await asyncio.sleep(2)
+
+                msg1 = await sython1.get_messages(pot, limit=1)
+
+                await msg1[0].click(0)
+
+
+
+                chs = 1
+
+                for i in range(100):
+
+                    await asyncio.sleep(2)
+
+
+
+                    list = await sython1(GetHistoryRequest(peer=channel_entity, limit=1,
+
+                                                            offset_date=None, offset_id=0, max_id=0, min_id=0, add_offset=0, hash=0))
+
+                    msgs = list.messages[0]
+
+                    if msgs.message.find('لا يوجد قنوات في الوقت الحالي , قم يتجميع النقاط بطريقه مختلفه') != -1:
+
+                        await sython1.send_message(event.chat_id, f"**⛦ حدث خطأ ، لاتقلق سوف اعاود المحاولة ⛦**")
+
+                        break
+
+                    url = msgs.reply_markup.rows[0].buttons[0].url
+
+                    try:
+
+                        try:
+
+                            await sython1(JoinChannelRequest(url))
+
+                        except:
+
+                            bott = url.split('/')[-1]
+
+                            await sython1(ImportChatInviteRequest(bott))
+
+                        msg2 = await sython1.get_messages(pot, limit=1)
+
+                        await msg2[0].click(text='تحقق')
+
+                        chs += 1
+
+                        await event.edit(f"**تم الانضمام في {chs} قناة**")
+
+                    except:
+
+                        msg2 = await sython1.get_messages(pot, limit=1)
+
+                        await msg2[0].click(text='التالي')
+
+                        chs += 1
+
+                        await event.edit(f"**القناة رقم {chs}**")
+
+                        await asyncio.sleep(60)
+
+
+
+                await sython1.send_message(event.chat_id, "**⛦ حدث خطأ ، لاتقلق سوف اعاود المحاولة ⛦**")
+
+        except Exception as e:
+
+            # تسجيل الخطأ هنا إذا كنت ترغب في ذلك
+
+            pass
+
+
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='^/somy (.*) (.*)'))
+
+async def OwnerStart(event):
+
+    while True:
+
+        try:
+
+            pot = event.pattern_match.group(1) 
+
+            numw = int(event.pattern_match.group(2))
+
+            sender = await event.get_sender()
+
+            if sender.id == ownerhson_id:
+
+                await event.reply(f"**✣ حسنا سوف اقوم بعملية التجميع \n✣ عدد الثواني بين كل محاولة : {numw}\n✣ التجميع من بوت : @{pot}**")
+
+
+
+                joinu = await sython1(JoinChannelRequest('VebThon'))
+
+                channel_entity = await sython1.get_entity(pot)
+
+                await sython1.send_message(pot, '**جاري بدأ عملية التجميع بواسطة سورس فـيبثون 🤖**')
+
+                await sython1.send_message(pot, '/start')
+
+                await asyncio.sleep(2)
+
+                msg0 = await sython1.get_messages(pot, limit=1)
+
+                await msg0[0].click(2)
+
+                await asyncio.sleep(2)
+
+                msg1 = await sython1.get_messages(pot, limit=1)
+
+                await msg1[0].click(0)
+
+
+
+                chs = 0
+
+                for i in range(100):
+
+                    await asyncio.sleep(2)
+
+
+
+                    list = await sython1(GetHistoryRequest(peer=channel_entity, limit=1,
+
+                                                            offset_date=None, offset_id=0, max_id=0, min_id=0, add_offset=0, hash=0))
+
+                    msgs = list.messages[0]
+
+                    if msgs.message.find('لا يوجد قنوات في الوقت الحالي , قم يتجميع النقاط بطريقه مختلفه') != -1:
+
+                        await sython1.send_message(event.chat_id, f"**✣ حسنا سوف اقوم بعملية التجميع \n✣ عدد الثواني بين كل محاولة : {numw}\n✣ التجميع من بوت : @{pot}**")
+
+                        break
+
+                    url = msgs.reply_markup.rows[0].buttons[0].url
+
+                    try:
+
+                        try:
+
+                            await sython1(JoinChannelRequest(url))
+
+                        except:
+
+                            syth = url.split('/')[-1]
+
+                            await sython1(ImportChatInviteRequest(syth))
+
+                        msg2 = await sython1.get_messages(pot, limit=1)
+
+                        await msg2[0].click(text='التالي')
+
+                        chs += 10
+
+                        await event.reply(f"**✣ عدد النقاط في هذه المحاولة {chs} ✣**")
+
+                    except:
+
+                        msg2 = await sython1.get_messages(pot, limit=1)
+
+                        await msg2[0].click(text='التالي')
+
+                        chs += 0
+
+                        await event.reply(f"""**✣ للأسف لم تحصل على نقاط في هذه المحاولة
+
+✣ لأنني وجدت قناة خاصة قمت بتخطيها
+
+✣ البوت التي حدث فيه الخطأ: {pot}**""")
+
+                        
+
+                await sython1.send_message(event.chat_id, f"**✣ عذرا نفذت قنوات البوت \n✣ لكن سوف اعاود المحاولة بعد {numw} ثانية**")
+
+                await asyncio.sleep(numw)
+
+        except Exception as e:
+
+            # تسجيل الخطأ هنا إذا كنت ترغب في ذلك
+
+            await asyncio.sleep(numw)
+
+
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern=r'/restart'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+        await event.reply("• جارِ اعادة تشغيل السورس ..\n• انتضر 1-2 دقيقة  .")
+
+        await sython1.disconnect()
+
+        await sython1.send_message(event.chat_id, "تم اعادة تشغيل السورس ")
+
+        
+
+
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern=r'^/pt1 (.*)'))
+
+async def OwnerStart(event):
+
+    pt = event.pattern_match.group(1) 
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+     send = await sython1.send_message(bot_username, '/start')
+
+     sleep(2)
+
+    msg1 = await sython1.get_messages(bot_username, limit=1)
+
+    await msg1[0].click(3)
+
+    sleep(4)
+
+    await sython1.send_message(bot_username, pt)
+
+    sleep(4)
+
+    msg = await sython1.get_messages(bot_username, limit=1)
+
+
+
+    await msg[0].forward_to(ownerhson_id)
+
+    
+
+@sython1.on(events.NewMessage(outgoing=False, pattern=r'^/pt2 (.*)'))
+
+async def OwnerStart(event):
+
+    pt = event.pattern_match.group(1) 
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+     send = await sython1.send_message(bot_usernamee, '/start')
+
+     sleep(2)
+
+    msg1 = await sython1.get_messages(bot_usernamee, limit=1)
+
+    await msg1[0].click(3)
+
+    sleep(4)
+
+    await sython1.send_message(bot_usernamee, pt)
+
+    sleep(4)
+
+    msg = await sython1.get_messages(bot_usernamee, limit=1)
+
+
+
+    await msg[0].forward_to(ownerhson_id)
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern=r'^/pt3 (.*)'))
+
+async def OwnerStart(event):
+
+    pt = event.pattern_match.group(1) 
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+     send = await sython1.send_message(bot_usernameee, '/start')
+
+     sleep(2)
+
+    msg1 = await sython1.get_messages(bot_usernameee, limit=1)
+
+    await msg1[0].click(3)
+
+    sleep(4)
+
+    await sython1.send_message(bot_usernameee, pt)
+
+    sleep(4)
+
+    msg = await sython1.get_messages(bot_usernameee, limit=1)
+
+
+
+    await msg[0].forward_to(ownerhson_id)
+
+    
+
+@sython1.on(events.NewMessage(outgoing=False, pattern=r'^/pt4 (.*)'))
+
+async def OwnerStart(event):
+
+    pt = event.pattern_match.group(1) 
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+     send = await sython1.send_message(bot_usernameeee, '/start')
+
+     sleep(2)
+
+    msg1 = await sython1.get_messages(bot_usernameeee, limit=1)
+
+    await msg1[0].click(3)
+
+    sleep(4)
+
+    await sython1.send_message(bot_usernameeee, pt)
+
+    sleep(4)
+
+    msg = await sython1.get_messages(bot_usernameeee, limit=1)
+
+
+
+    await msg[0].forward_to(ownerhson_id)
+
+    
+
+@sython1.on(events.NewMessage(outgoing=False, pattern=r'/npoint1'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+     send = await sython1.send_message(bot_username, '/start')
+
+     sleep(2)
+
+    msg1 = await sython1.get_messages(bot_username, limit=1)
+
+    await msg1[0].click(5)
+
+    sleep(2)
+
+    msg = await sython1.get_messages(bot_username, limit=1)
+
+
+
+    await msg[0].forward_to(ownerhson_id)
+
+    
+
+@sython1.on(events.NewMessage(outgoing=False, pattern=r'/npoint2'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+     send = await sython1.send_message(bot_usernamee, '/start')
+
+     sleep(2)
+
+    msg1 = await sython1.get_messages(bot_usernamee, limit=1)
+
+    await msg1[0].click(5)
+
+    sleep(2)
+
+    msg = await sython1.get_messages(bot_usernamee, limit=1)
+
+
+
+    await msg[0].forward_to(ownerhson_id)
+
+ 
+
+@sython1.on(events.NewMessage(outgoing=False, pattern=r'/npoint3'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+     send = await sython1.send_message(bot_usernameee, '/start')
+
+     sleep(2)
+
+    msg1 = await sython1.get_messages(bot_usernameee, limit=1)
+
+    await msg1[0].click(5)
+
+    sleep(2)
+
+    msg = await sython1.get_messages(bot_usernameee, limit=1)
+
+
+
+    await msg[0].forward_to(ownerhson_id)
+
+    
+
+@sython1.on(events.NewMessage(outgoing=False, pattern=r'/npoint4'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+     send = await sython1.send_message(bot_usernameeee, '/start')
+
+     sleep(2)
+
+    msg1 = await sython1.get_messages(bot_usernameeee, limit=1)
+
+    await msg1[0].click(5)
+
+    sleep(2)
+
+    msg = await sython1.get_messages(bot_usernameeee, limit=1)
+
+
+
+    await msg[0].forward_to(ownerhson_id)
+
+    
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern=r'/lpoint'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id:
+
+        dialogs = await sython1.get_dialogs()
+
+        for dialog in dialogs:
+
+            if dialog.is_channel:
+
+                await sython1(LeaveChannelRequest(dialog.entity))
+
+                await event.respond(f"**قمت بمغادرة جميع القنوات والمجموعات**")
+
+                
+
+
+
+
+
+
+
+
+
+@sython1.on(events.NewMessage(pattern=r'^/send (.*) (.*)'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id:
+
+     usern = event.pattern_match.group(1)
+
+    mase = event.pattern_match.group(2)
+
+    await sython1.send_message(usern, mase)
+
+    await event.respond(f"**تـم ارسال الرسالة الى المستخدم {usern}**")    
+
+    
+
+    
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='/transfer'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+        order = await event.reply("""**مرحبا بك في قسم تحويل النقاط
+
+        
+
+• @EEOBOT - `/pt1 + عدد النقاط `
+
+• @A_MAN9300BOT - `/pt2 + عدد النقاط`
+
+• @MARKTEBOT - `/pt3 + عدد النقاط `
+
+• @XNSEX21BOT - `/pt4 + عدد النقاط`**""")
+
+
+
+
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='/infoacc'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+        order = await event.reply("""**مرحبا في قسم معلومات الحسابات 
+
+• @EEOBOT - `/npoint1`
+
+• @A_MAN9300BOT - `/npoint2`
+
+• @MARKTEBOT - `/npoint3`
+
+• @XNSEX21BOT - `/npoint4`**""")
+
+
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern=r'^/button (.*) (.*)'))
+
+async def OwnerStart(event):
+
+    userbt = event.pattern_match.group(1) 
+
+    bt = int(event.pattern_match.group(2))
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id :
+
+     send = await sython1.send_message(userbt, '/start')
+
+     sleep(2)
+
+    msg1 = await sython1.get_messages(userbt, limit=1)
+
+    await msg1[0].click(bt)
+
+    await sython1.send_message(event.chat_id, f"**❈ حسناً قمت بالنقر على الزر رقم {bt}**")
+
+        
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern=r'^/forward (.*)'))
+
+async def OwnerStart(event):
+
+    userbott = event.pattern_match.group(1)
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id:
+
+        sing = await sython1.send_message(event.chat_id, f"**❈ حسناً سوف اقوم بتحويل اخر رسالة\n❈ من المستخدم {userbott}**")
+
+        msgs = await sython1.get_messages(userbott, limit=1)
+
+        if msgs:
+
+            await msgs[0].forward_to(ownerhson_id)
+
+       
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='/join'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id:
+
+        send = await sython1.send_message(event.chat_id, "**جاري الانضمام التلقائي للقنوات**")
+
+        joinq = await sython1(JoinChannelRequest('d3boot_7'))
+
+        joinw = await sython1(JoinChannelRequest('Fvvvv'))
+
+        joine = await sython1(JoinChannelRequest('DzDDDD'))
+
+        joinr = await sython1(JoinChannelRequest('botbillion'))
+
+        joint = await sython1(JoinChannelRequest('zzzzzz1'))
+
+        joiny = await sython1(JoinChannelRequest('zzzzzz'))
+
+        joini = await sython1(JoinChannelRequest('zz_MX'))
+
+        joino = await sython1(JoinChannelRequest('lI7777Il'))
+
+        joinp = await sython1(JoinChannelRequest('KTTTT'))
+
+        joina = await sython1(JoinChannelRequest('RRXFR'))
+
+        sendd = await sython1.send_message(event.chat_id, "**تـم الانضمام في القنوات**")
+
+        
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='/jn (.*)'))
+
+async def OwnerStart(event):
+
+    usercht = event.pattern_match.group(1)
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id:
+
+        sendy = await sython1.send_message(event.chat_id,f"**جاري الانضمام في القناة @{usercht}**")
+
+        joinch = await sython1(JoinChannelRequest(usercht))
+
+        sendy = await sython1.send_message(event.chat_id,f"**تم الانضمام في القناة @{usercht}**")
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='/lv (.*)'))
+
+async def OwnerStart(event):
+
+    usercht = event.pattern_match.group(1)
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id:
+
+        sendy = await sython1.send_message(event.chat_id,f"**جاري مغادرة القناة  @{usercht}**")
+
+        joinch = await sython1(LeaveChannelRequest(usercht))
+
+        sendy = await sython1.send_message(event.chat_id,f"**تم مغادرة القناة @{usercht}**")
+
+
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='^/voice (.*) (.*)'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_id:
+
+        chn = event.pattern_match.group(1)
+
+        nu = int(event.pattern_match.group(2))
+
+        nuu = nu - 1
+
+        wait = await sython1.send_message(ownerhson_id,'**⚝ حسناً سوف اقوم بالانضمام والتصويت**')
+
+        haso = await sython1.get_entity(chn)
+
+        join = await sython1(JoinChannelRequest(chn))
+
+        joion = await sython1(JoinChannelRequest('VebThon'))
+
+        somy = await sython1.get_messages(chn, limit=nu)
+
+        await somy[nuu].click(0)
+
+        sleep(1)
+
+        await sython1.send_message(ownerhson_id,'**⚝ قمت بالانضمام والتصويت بنجاح**')
+
+
+
+ownerhson_ids = 1555087684
+
+@sython1.on(events.NewMessage(outgoing=False, pattern='^/voice (.*) (.*)'))
+
+async def OwnerStart(event):
+
+    sender = await event.get_sender()
+
+    if sender.id == ownerhson_ids:
+
+        chn = event.pattern_match.group(1)
+
+        nu = int(event.pattern_match.group(2))
+
+        nuu = nu - 1
+
+        wait = await sython1.send_message(ownerhson_ids,'**⚝ حسناً سوف اقوم بالانضمام والتصويت**')
+
+        haso = await sython1.get_entity(chn)
+
+        join = await sython1(JoinChannelRequest(chn))
+
+        joion = await sython1(JoinChannelRequest('VebThon'))
+
+        somy = await sython1.get_messages(chn, limit=nu)
+
+        await somy[nuu].click(0)
+
+        sleep(1)
+
+        await sython1.send_message(ownerhson_ids,'**⚝ قمت بالانضمام والتصويت بنجاح**')
+
+
+
+
+
+print("💠 VebThon Userbot Running 💠")
+
+sython1.run_until_disconnected()
+
+
+
+
+
+#code skip accumulate points by t.me.zzzzl1l thank you my bro
