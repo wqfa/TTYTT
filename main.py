@@ -1,160 +1,347 @@
-import os
-try:
-	import telebot
-	from telebot import types
-	import requests
-	import time
-	import random,re
-except ImportError:
-	os.system('pip install telebot')
-	os.system('pip install requests')
-	os.system('pip install time')
-	os.system('pip install random')
-	os.system('pip install re')
-	os.system('clear')
-bot = telebot.TeleBot('6374219818:AAE0iUS7SWX5b6YHNEQbh_m13JI-Rwif-Ss')
+from telethon import TelegramClient, events, Button, errors
+from telethon.tl.functions.channels import JoinChannelRequest
+from telethon.tl.functions.messages import ImportChatInviteRequest
+from telethon.sessions import StringSession
+import asyncio, json, os, re
+# sessions @xsiner0
+api_id_bot = 24106627 # اب ايدي 
+api_hash_bot = "6978bec96d690bb1f98ab3b2c8c54e83" # اب هاش
+bot = TelegramClient("Bot", api_id_bot, api_hash_bot).start(bot_token="6374219818:AAE0iUS7SWX5b6YHNEQbh_m13JI-Rwif-Ss") # توكن بوتك
 
-@bot.message_handler(commands=['start','cookies'])
-def st(message):
-	but1 = types.InlineKeyboardButton('START - بدء', callback_data='but1')
-	he = types.InlineKeyboardButton('HELP', callback_data='he')
-	ur = types.InlineKeyboardButton('الصانع الاساسي', url='t.me/C15CS')
-	mar = types.InlineKeyboardMarkup(row_width=2)
-	mar.add(but1, he, ur)
-	na = message.from_user.full_name
-	bot.send_message(message.chat.id, text=f'''<strong>
-اهلا بك {na} ،
-البوت مخصص لسحب كوكيز انستا & فيسبوك
-اضغط بدء لتشغيل البوت
-</strong>
-	''', parse_mode='html', reply_markup=mar)
-@bot.callback_query_handler(func=lambda call:True)
-def call1(call):
-	if call.data == 'but1':
-		t1 = types.InlineKeyboardButton('cookies & sessionid insta ', callback_data='t1')
-		t2 = types.InlineKeyboardButton('cookies facebook', callback_data='t2')
-		ch = types.InlineKeyboardButton(' channel', url='t.me/C15CS')
-		ll = types.InlineKeyboardMarkup(row_width=2);ll.add(t1,t2,ch)
-		nam = call.from_user.full_name
-		bot.edit_message_text(chat_id=call.message.chat.id,message_id=call.message.message_id,text=f'''
-اهلا بك {nam} ،
-اخِتر التطبيق لسحب الكوكيز
-		''', reply_markup=ll)
-	elif call.data == 'he':
-		name = call.from_user.full_name
-		idw = call.from_user.id
-		user__name = call.from_user.username
-		bot.edit_message_text(chat_id=call.message.chat.id,message_id=call.message.message_id,text=f'''
-اهلا بك 
-name ~ {name}
-user ~ @{user__name}
-id ~ <code>{idw}</code>
-البوت مخصص لسحب كوكيز انستا و فيسبوك
-الرجاء ارسال اليوزر مع الرمز علي هذه النحو
-username:password
-		''', parse_mode='html')
-	elif call.data == 't1':
-		de = bot.edit_message_text(chat_id=call.message.chat.id,message_id=call.message.message_id,text=f'''<strong>
-رائع !!
-ارسل اليوزر مع الباس على هذه النحو فضلا
-username:password </strong>
-		''', parse_mode='html')
-		bot.register_next_step_handler(de, der)
-	elif call.data == 't2':
-		dee = bot.edit_message_text(chat_id=call.message.chat.id,message_id=call.message.message_id,text=f'''<strong>
-رائع !!
-ارسل اليوزر مع الباس على هذه النحو فضلا
-username:password </strong>
-		''', parse_mode='html')
-		bot.register_next_step_handler(dee, derr)
-def der(a):
-	k = a.text
-	try:
-		user = k.split(':')[0]
-		pasw = k.split(':')[1]
-	except:
-		bot.send_message(a.chat.id,text='عذرا عزيزي لا يمكنك الارسال على هذه النحو الرجاء راجع قسم المساعده')
-		return
-	if str(':') in k:
-		url ='https://www.instagram.com/accounts/login/ajax/'
-		head = {
-        'accept': '*/*',
-        'accept-encoding': 'gzip, deflate, br',
-        'accept-language': 'en-US,en;q=0.9',
-        'content-length': '336',
-        'content-type': 'application/x-www-form-urlencoded',
-        'cookie': 'mid=YPvYkQALAAH7ZlNgkXiBnW6y7AOy; ig_did=1C396C9B-7DC7-463E-A68B-FE991198F88A; ig_nrcb=1; shbid="944\0546317830362\0541658653745:01f7bf09c30c2bf6ae86e32af31b5991cd84a607e1547a0132f6b653c4b76ecc26abbc4e"; shbts="1627117745\0546317830362\0541658653745:01f716bcf5ca94c711aa8ee17e52cf927685a30c29c89e0310cfe9f86589901109fd5b1e"; rur="RVA\05448065200129\0541658659405:01f7d96b5f9c1cf2396b6d00cbc7281da4dc2bb4c75a035bf4917e188315d170aec60aa2"; csrftoken=mWehV8ELhUeOnA4aWc43a7PplDLL0jNL',
-        'origin': 'https://www.instagram.com',
-        'referer': 'https://www.instagram.com/',
-        'sec-ch-ua': '"Chromium";v="92", " Not A;Brand";v="99", "Google Chrome";v="92"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36',
-        'x-asbd-id': '437806',
-        'x-csrftoken': 'mWehV8ELhUeOnA4aWc43a7PplDLL0jNL',
-        'x-ig-app-id': '936619743392459',
-        'x-ig-www-claim': 'hmac.AR2oFTCuitCzXvttHXW3DD1kZLwzL7oauskQL1Jp6ogO6FF6',
-        'x-instagram-ajax': 'caee87137ae9',
-        'x-requested-with': 'XMLHttpRequest'
-    }
-		tim = str(time.time()).split('.')[1]
-		data = {
-        'username': f'{user}',
-        'enc_password': f'#PWD_INSTAGRAM_BROWSER:0:{tim}:{pasw}',
-        'queryParams': '{}',
-        'optIntoOneTap': 'false',
-        'trustedDeviceRecords': '{}'
-    }
-		rr = requests.post(url, headers=head,data=data).text
-		print(rr)
-		if ('"Sorry, your password was incorrect. Please double-check your password."') in rr or ('"user":true,"authenticated":false,') in rr:
-			bot.send_message(a.chat.id,text='باسورد خطا')
-		elif ('"checkpoint_url"') in rr:
-			bot.send_message(a.chat.id,text='الحساب سكيور')
-		elif ('"user":true,') and ('"authenticated":true,') in rr:
-			oo = rr.cookies
-			coo = rr.get_dict()
-			cookie = f"sessionid={coo['sessionid']};ds_user_id={coo['ds_user_id']};csrftoken={coo['csrftoken']};"
-			sessoin = coo['sessionid']
-			bot.send_message(a.chat.id,text=f'''
-تسجيل دخول صحيح
+# needs
+owner_id = [6161180217] #ايديك
+collect, bots_to_collect, start_earn = True, [], False
 
-cook ~ <code>{cookie}</code>
+# LOAD SESSION
+sessions = json.load(open("sessions/kayon.json"))
 
-sessionid ~ <code>{sessoin}</code>
-			''', parse_mode='html', reply_to_message_id=k)
-	else:
-		pass
-def derr(s):
-	l = s.text
-	try:
-		usee = s.split(':')[0]
-		paso = s.split(':')[1]
-	except:
-		bot.send_message(s.chat.id,text='عذرا عزيزي لا يمكنك الارسال على هذه النحو الرجاء راجع قسم المساعده')
-		return
-	if str(':') in l:
-		see = requests.Session()
-		while True:
-			zo ='QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm'
-			zh='1234567890'
-			us="".join(random.choice(zo)for i in range(6))
-			ud="".join(random.choice(zo)for i in range(4))
-			udm="".join(random.choice(zh)for i in range(4))
-			ua =f'{us}/9.80 (Series 60; {us} {ud}/7.0.{udm}00/28.3445; U; en) Presto/2.8.119 Version/11.10'
-		see.headers.update({"Host":'m.facebook.com',"upgrade-insecure-requests":"1","user-agent": ua,"accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*[inserted by cython to avoid comment closer]/[inserted by cython to avoid comment start]*;q=0.8,application/signed-exchange;v=b3;q=0.9","dnt":"1","x-requested-with":"mark.via.gp","sec-fetch-site":"same-origin","sec-fetch-mode":"cors","sec-fetch-user":"empty","sec-fetch-dest":"document","referer":"https://m.facebook.com/","accept-encoding":"gzip, deflate br","accept-language":"en-GB,en-US;q=0.9,en;q=0.8"})
-		p = see.get('https://m.facebook.com/index.php?next=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fdebug%2Faccesstoken%2F').text
-		dataa ={"lsd":re.search('name="lsd" value="(.*?)"', str(p)).group(1),"jazoest":re.search('name="jazoest" value="(.*?)"', str(p)).group(1),"uid":usee,"flow":"login_no_pin","pass":paso,"next":"https://developers.facebook.com/tools/debug/accesstoken/"}
-		see.headers.update({"Host":'m.facebook.com',"upgrade-insecure-requests":"1","user-agent": ua,"accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*[inserted by cython to avoid comment closer]/[inserted by cython to avoid comment start]*;q=0.8,application/signed-exchange;v=b3;q=0.9","dnt":"1","x-requested-with":"mark.via.gp","sec-fetch-site":"same-origin","sec-fetch-mode":"cors","sec-fetch-user":"empty","sec-fetch-dest":"document","referer":"https://m.facebook.com/","accept-encoding":"gzip, deflate br","accept-language":"en-GB,en-US;q=0.9,en;q=0.8"})
-		po = see.post('https://m.facebook.com/login/device-based/validate-password/?shbl=0',data=dataa,allow_redirects=False)
-		kie = see.cookies.get_dict()
-		if 'xs' and 'c_user' in kie:
-			koe = f"datr={kie['datr']};sb={kie['sb']};vpd=v1%3B633x360x2;locale=ar_AR;m_pixel_ratio=2;fr={kie['fr']};c_user={kie['c_user']};xs={kie['xs']};m_page_voice={kie['c_user']};wd=360x633;"
-			bot.send_message(s.chat.id,text=f'''
-good cookies
 
-cookie = <code>{koe}</code>
-			''', parse_mode='html', reply_to_message_id=l)
-bot.polling(True)
+
+# NEW USERS TO JSON
+async def ToJson(user, path):
+    with open(path, 'w') as file:
+        json.dump(user, file) 
+        
+
+# ADD NEW NUMBER
+async def Add_NUMBER(event, api_id, api_hash, phone_number):      
+    try:
+        phone_number = phone_number.replace('+','').replace(' ', '')
+        sessions = TelegramClient("sessions/"+phone_number+".sessions", api_id, api_hash)
+        await sessions.connect()
+        
+        if not await sessions.is_user_authorized():
+            request = await sessions.send_code_request(phone_number)
+            
+            async with bot.conversation(event.chat_id, timeout=200) as conv:
+                # verification code
+                verification_code_msg = await conv.send_message("ارسل كود وصلك")
+                response_verification_code = await conv.get_response()
+                verification_code = str(response_verification_code.message).replace('-', '')
+                
+                try:
+                    login = await sessions.sign_in(phone_number, code=int(verification_code))
+                except errors.SessionPasswordNeededError:
+                    password_msg = await conv.send_message("ارسل تحقق بخطوتين")
+                    password = await conv.get_response()
+                    
+                    login = await sessions.sign_in(phone_number, password=password.text)
+
+                # add to json
+                count = f"session_{phone_number}"
+                New_item = {count: {"phone": phone_number, "api_id": api_id, "api_hash": api_hash}}
+                sessions.update(New_item)
+
+                await ToJson(sessions, "sessions/kayon.json")
+        return "تم اضافة الرقم بنجاح"
+    except Exception as error:
+        return str(error)
+
+# KEYBOARD
+async def StartButtons(event, role):
+    if role == 2:
+        buttons = [[Button.inline("اضافه رقم ⚙️", "add_number")]]
+    elif role == 1:
+        buttons = [[Button.inline("اضافه رقم ⚙️", "add_number")], [Button.inline("حذف رقم 🧑‍💻", "remove_number")]]
+    await event.reply("لاضافه رقم او حذف يرجى اختيار من الازرار موجوده تحت 🥷", buttons=buttons)
+
+
+# BOT START
+@bot.on(events.NewMessage(pattern='/start'))
+async def BotOnStart(event):
+    
+    if event.chat_id in owner_id:
+        await StartButtons(event, 1)
+    else:
+        await StartButtons(event, 2)
+
+# DELETE NUMBER TELEGRAM BOT 
+@bot.on(events.CallbackQuery(data="back_to_menu"))
+async def Callbacks__(event):
+
+    if event.chat_id in owner_id:
+        await StartButtons(event, 1)
+    else:
+        await StartButtons(event, 2)
+
+# DELETE NUMBER TELEGRAM BOT 
+@bot.on(events.CallbackQuery(data="remove_number"))
+async def Callbacks_(event):
+    global sessions
+    
+    delete, sessions, in_session = await event.delete(), json.load(open("sessions/kayon.json")), False
+    try:
+        async with bot.conversation(event.chat_id, timeout=200) as conv:
+            # verification code
+            get_number= await conv.send_message("__ارسل الرقم لحذفه__")
+            remove_number = await conv.get_response()
+            remove_number = (remove_number.text).replace('+', '').replace(' ', '')
+            for session in sessions:
+                session_number = sessions.get(session).get("phone")
+                if remove_number == session_number:
+                    del sessions[session]
+                    await ToJson(sessions, "sessions/kayon.json")
+                    in_session = True
+                    break
+        
+    except Exception as error:
+        print (error)
+        
+    if in_session == True:
+        await event.reply("تم حذف الرقم بنجاح")
+        sessions = json.load(open("sessions/kayon.json"))
+    else:
+        await event.reply("هذا الرقم غير موجود")
+        
+    if event.chat_id in owner_id:
+        await StartButtons(event, 1)
+    else:
+        await StartButtons(event, 2)
+
+# ADD NUMBER TELEGRAM BOT INFORMATION
+@bot.on(events.CallbackQuery(data="add_number"))
+async def Callbacks(event):
+    
+    await event.delete()    
+    try:
+        # get information from user
+        async with bot.conversation(event.chat_id, timeout=200) as conv:
+            await conv.send_message('ارسل اب ايدي')
+            api_id_msg = await conv.get_response()
+            api_id = api_id_msg.text
+            
+            await conv.send_message('ارسل اب هاش')
+            api_hash_msg = await conv.get_response()
+            api_hash_msg = api_hash_msg.text
+            
+            await conv.send_message('ارسل رقم الهاتف 🌝')
+            phone_number_msg = await conv.get_response()
+            phone_number_msg = phone_number_msg.text
+
+            await conv.send_message(f'''
+**Api id :** `{api_id}`
+**Api hash :** `{api_hash_msg}`
+**Phone number :** `{phone_number_msg}`
+
+جاري تسجيل الدخول
+''')
+
+        result = await Add_NUMBER(event, int(api_id), api_hash_msg, phone_number_msg)
+        await event.reply(result)
+    except Exception as error:
+        pass
+        
+    if event.chat_id in owner_id:
+        await StartButtons(event, 1)
+    else:
+        await StartButtons(event, 2)
+    
+    
+#####################################################################################
+# STOP COLLECT POINTS
+@bot.on(events.NewMessage(pattern=r'.ايقاف الجمع ?(.*)'))
+async def StopCollectPoints(event):
+    if event.chat_id in owner_id:
+        collect = False
+        stop_collect = await event.reply('**تم ايقاف الجمع**')
+
+# START COLLECT POINTS
+@bot.on(events.NewMessage(pattern=r'.بدء الجمع ?(.*)'))
+async def StartCollectPoints(event):
+    global start_earn
+    
+    if event.chat_id in owner_id:
+        bot_username = (event.message.message).replace('.بدء الجمع', '').strip()
+        start_collect, collect = await event.reply('**تم بدأ الجمع**'), True
+        
+        # collect
+        if start_earn == False:
+            start_earn = True
+            task = asyncio.create_task(StartCollect(event, bot_username))
+            await task
+        
+        order = await event.reply('**تم الجمع من جميع الحسابات**')
+
+
+# JOIN PUBLIC
+async def JoinChannel(client, username):
+    try:
+        Join = await client(JoinChannelRequest(channel=username))
+        return [True, '']
+    except errors.FloodWaitError as error:
+        return [False, f'تم حظر هذا الحساب من الانضمام للقنوات لمدة : {error.seconds} ثانية']
+    except errors.ChannelsTooMuchError:
+        return [False, 'هذا الحساب وصل للحد الاقصى من القنوات التي يستطيع الانضمام لها']
+    except errors.ChannelInvalidError:
+        return [False, False]
+    except errors.ChannelPrivateError:
+        return [False, False]
+    except errors.InviteRequestSentError:
+        return [False, False]
+    except Exception as error:
+        return [False, f'{error}']
+    
+
+# JOIN PRIVATE
+async def JoinChannelPrivate(client, username):
+    try:
+        Join = await client(ImportChatInviteRequest(hash=username))
+        return [True, '']
+    except errors.UserAlreadyParticipantError:
+        return [True, '']
+    except errors.UsersTooMuchError:
+        return [False, False]
+    except errors.ChannelsTooMuchError:
+        return [False, 'هذا الحساب وصل للحد الاقصى من القنوات التي يستطيع الانضمام لها']
+    except errors.InviteHashEmptyError:
+        return [False, False]
+    except errors.InviteHashExpiredError:
+        return [False, False]
+    except errors.InviteHashInvalidError:
+        return [False, False]
+    except errors.InviteRequestSentError:
+        return [False, False]
+    except Exception as error:
+        return [False, f'{error}']
+    
+
+# COLLECT NOW
+async def StartCollect(event, bot_username):
+    
+    # load sessions
+    sessions = json.load(open("sessions/kayon.json"))
+    while collect != False:
+        for session in sessions:
+            try:
+                if collect == False:
+                    # disconnect
+                    try:
+                        await client.disconnect()
+                    except Exception as error:
+                        pass
+                    break
+                
+                api_id = int(sessions[session]["api_id"])
+                api_hash = str(sessions[session]["api_hash"])
+                phone = str(sessions[session]["phone"])
+                
+                client = TelegramClient("sessions/"+(phone), api_id, api_hash)
+                
+                await client.connect()
+                user = await client.get_me()
+                if user == None:
+                    await bot.send_message(entity=owner_id[0] ,message=f"**الرقم :** {phone}\n\nهذا الرقم لا يعمل")
+                else:
+                    async with client.conversation(bot_username, timeout=20) as conv:
+                        try:
+                            while True:
+                                start_msg1 = await conv.send_message("/start")
+                                resp = await conv.get_response()
+                                
+                                # check for must join
+                                if "عذراً عزيزي" in resp.text or "عذرا عزيزي" in resp.text:
+                                    link_pattern = re.compile(r'(https?://\S+)')
+                                    link = re.search(link_pattern, resp.message).group(1)
+                                    
+                                    print (link)
+                                    if link.startswith('https://t.me/+') or link.startswith('https://t.me/joinchat/+'):
+                                        link = link.replace('https://t.me/joinchat/+', '')
+                                        link = link.replace('https://t.me/+', '')
+                                        result = await JoinChannelPrivate(client, link.strip())
+                                    else:
+                                        get_entity_must_join = await client.get_entity(link)
+                                        result = await JoinChannel(client, get_entity_must_join.id)
+                                else:
+                                    break
+                            
+                            click_collect = await resp.click(2)
+                            resp2 = await conv.get_edit()
+                            click_collect = await resp2.click(0)
+                    
+                            for x in range(6):
+                                if collect == False:
+                                    # disconnect
+                                    try:
+                                        await client.disconnect()
+                                    except Exception as error:
+                                        pass
+                                    break
+                                try:
+                                    channel_details = await conv.get_edit()       
+                                    
+                                    # check points
+                                    number_str = (channel_details.message).split('نقاطك الحاليه :')[1].strip()
+                                    if int(number_str.strip()) >= 2000:
+                                        await bot.send_message(entity=owner_id[0] ,message=f"**الرقم :** {phone}\n\n__لقد وصل هذا الحساب الى {number_str} نقطة__")
+                                        break
+                                                             
+                                    channel_url = (channel_details.reply_markup.rows[0].buttons[0].url).replace('https://t.me/', '')
+                                    if "+" in channel_url:
+                                        channel_url = channel_url.replace('+', '')
+                                        result = await JoinChannelPrivate(client, channel_url)
+                                    else:
+                                        result = await JoinChannel(client, channel_url)
+
+                                    if result[0] == True:
+                                        await channel_details.click(2)
+                                    else:
+                                        if result[1] == False:
+                                            await channel_details.click(1)
+                                        else:
+                                            await bot.send_message(entity=owner_id[0] ,message=f"**الرقم :** {phone}\n\n__{result[1]}__")
+                                            # disconnect
+                                            try:
+                                                await client.disconnect()
+                                            except Exception as error:
+                                                pass
+                                            break
+                                        
+                                    await asyncio.sleep(3)
+                                    
+                                except Exception as error:
+                                    await bot.send_message(entity=owner_id[0] ,message=f"**الرقم :** {phone}\n\n__{error}__")
+                                    # disconnect
+                                    try:
+                                        await client.disconnect()
+                                    except Exception as error:
+                                        pass
+                                    break
+                    
+                        except Exception as error:
+                            if str(error) == "":
+                                await bot.send_message(entity=owner_id[0] ,message=f"**الرقم :** {phone}\n\nالبوت لا يستجيب بسرعه. تم تخطي هذا الرقم")
+                
+                
+                # disconnect
+                try:
+                    await client.disconnect()
+                except Exception as error:
+                    pass
+                
+                # load sessions again
+                sessions = json.load(open("sessions/kayon.json"))
+            except Exception as error:
+                pass
+        
+
+bot.run_until_disconnected()
